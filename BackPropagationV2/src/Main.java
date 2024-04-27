@@ -1,18 +1,18 @@
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 public class Main {
     static int TABLESIZE = 30;
     static int TRAINTABLESIZE = 27;
+
     public static void main(String[] args) {
-        double[][] table = fillInputTable();
+        double[][] table = createInputTable();
+        normalizeInputTable(table);
         int iterationsNumber = 50000;
 
-        BackPropagation algo = new BackPropagation(iterationsNumber, Arrays.copyOfRange(table, 0, 26));
+        BackPropagation algo = new BackPropagation(iterationsNumber, Arrays.copyOfRange(table, 0, TRAINTABLESIZE - 1));
         algo.startTraining();
         double avgError = 0;
-        for (int i = 0; i < 3; ++i) {
+        for (int i = TRAINTABLESIZE; i < TABLESIZE; ++i) {
             algo.evaluate(table[i]);
             avgError = getError(algo.getEvaluatedValue(), table[i][3]);
             System.out.printf("%7s | %7s | %7s\n","Answer", "Table", "Error");
@@ -22,11 +22,10 @@ public class Main {
         System.out.printf("\nAverage error: " + avgError);
 
     }
-
     private static double getError(double x, double y){
         return Math.abs(x-y);
     }
-    private static double[][] fillInputTable() {
+    private static double[][] createInputTable() {
         double averageValue = 0;
         double[][] inputTable = new double[TABLESIZE][5];
 
@@ -53,6 +52,10 @@ public class Main {
         for (double[] row : inputTable)
             row[4] = (row[3] > averageValue) ? 1 : 0;
 
+        return inputTable;
+    }
+
+    private static void normalizeInputTable(double[][] inputTable) {
         for (int j = 0; j < inputTable[0].length; j++) {
             double max = inputTable[0][j];
             double min = inputTable[0][j];
@@ -65,11 +68,6 @@ public class Main {
             for (double[] row : inputTable)
                 row[j] = (max - row[j]) / (max - min);
         }
-
-        List<double[]> inputList = Arrays.asList(inputTable);
-        Collections.shuffle(inputList);
-
-        return inputList.toArray(new double[0][0]);
     }
 
     private static double getFunctionValue(int x, int y, int z) {

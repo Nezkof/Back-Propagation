@@ -1,5 +1,8 @@
+import com.sun.source.tree.NewArrayTree;
+
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 public class BackPropagation {
     private final int FLNN = 4;
@@ -12,8 +15,9 @@ public class BackPropagation {
 
     public BackPropagation(int iterationsNumber, double[][] data) {
         this.iterationsNumber = iterationsNumber;
-        this.firstLayer = new Neuron[FLNN];
 
+
+        this.firstLayer = new Neuron[FLNN];
         for (int i = 0; i < firstLayer.length; ++i) {
             firstLayer[i] = new Neuron(FLNN, 3);
         }
@@ -21,7 +25,7 @@ public class BackPropagation {
         this.secondLayer = new Neuron[SLNN];
 
         for (int i = 0; i < secondLayer.length; ++i) {
-            secondLayer[i] = new Neuron(FLNN, 2);
+            secondLayer[i] = new Neuron(FLNN, FLNN);
         }
 
         this.data = data;
@@ -29,7 +33,9 @@ public class BackPropagation {
 
     public void startTraining() {
         for (int i = 0; i < iterationsNumber; ++i) {
-            Collections.shuffle(Collections.singletonList(data));
+            List<double[]> dataList = Arrays.asList(data);
+            Collections.shuffle(dataList);
+            dataList.toArray(data);
 
             for (double[] dataRow : data) {
                 double[] firstLayerOutputs = new double[FLNN];
